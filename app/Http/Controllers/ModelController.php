@@ -107,18 +107,9 @@ class ModelController extends Controller
     {
         $girl = Girl::find($id);
         $userLogin = Auth::id();
-        $userKey = 'user_' . Auth::id();
-        if (!Session::has($userKey)) {
-            Session::put($userKey, [$id]);
-
-            if ($girl->users) {
-                foreach ($girl->users as $user) {
-                    if ($user->id !== $userLogin) {
-                        $girl->users()->attach(Auth::id());
-
-                    }
-                }
-            }
+        $girl->users()->detach($userLogin);
+        if (count($girl->users) <= 0) {
+            $girl->users()->attach($userLogin);
         }
 
         $models = $this->modelService->getAll();
